@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz de Precificação — AnnRise Consulting</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0D2B4E;
+  --navy-mid: #163D6E;
+  --navy-light: #1F4E8C;
+  --amber: #F5820D;
+  --amber-light: #FEF0E0;
+  --white: #FFFFFF;
+  --off: #F7F8FA;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --text: #1A2332;
+  --radius: 12px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+h1, h2, h3, .display { font-family: 'Sora', sans-serif; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,43,78,0.96);
+  backdrop-filter: blur(8px);
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { color: var(--white); font-family: 'Sora', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
+.logo span { color: var(--amber); }
+nav a.cta-nav {
+  background: var(--amber); color: var(--white);
+  font-size: 13px; font-weight: 600; padding: 8px 18px;
+  border-radius: 99px; text-decoration: none; transition: opacity 0.2s;
+}
+nav a.cta-nav:hover { opacity: 0.88; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--navy);
+  padding: 80px 24px 72px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(245,130,13,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-block;
+  background: rgba(245,130,13,0.15);
+  color: var(--amber);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 99px; margin-bottom: 24px;
+  border: 1px solid rgba(245,130,13,0.3);
+}
+.hero h1 {
+  color: var(--white);
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 700; line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 760px; margin: 0 auto 20px;
+}
+.hero h1 em { color: var(--amber); font-style: normal; }
+.hero p.sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 18px; max-width: 520px; margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+/* Fake quiz preview */
+.quiz-preview {
+  background: var(--white);
+  border-radius: var(--radius);
+  max-width: 440px; margin: 0 auto 40px;
+  padding: 24px; text-align: left;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+}
+.qp-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+.qp-progress { background: #E5E7EB; border-radius: 99px; height: 5px; margin-bottom: 20px; }
+.qp-fill { background: var(--amber); height: 5px; border-radius: 99px; width: 0%; transition: width 1.2s ease; }
+.qp-question { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 15px; color: var(--text); margin-bottom: 14px; }
+.qp-opt {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 14px; font-size: 13px; color: var(--muted);
+  margin-bottom: 8px; transition: all 0.3s;
+}
+.qp-opt.active { border-color: var(--amber); background: var(--amber-light); color: var(--text); font-weight: 500; }
+
+.btn-hero {
+  display: inline-block;
+  background: var(--amber); color: var(--white);
+  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 17px;
+  padding: 16px 40px; border-radius: 99px; text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(245,130,13,0.4);
+}
+.btn-hero:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,130,13,0.45); }
+.hero-note { color: rgba(255,255,255,0.45); font-size: 13px; margin-top: 14px; }
+
+/* ── STATS ── */
+.stats {
+  background: var(--navy-mid);
+  padding: 28px 24px;
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 40px;
+}
+.stat { text-align: center; color: var(--white); }
+.stat strong { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 700; color: var(--amber); display: block; }
+.stat span { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+/* ── SECTIONS ── */
+section { padding: 80px 24px; }
+.container { max-width: 900px; margin: 0 auto; }
+.section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 10px;
+}
+.section-title {
+  font-size: clamp(24px, 3.5vw, 38px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.2;
+  margin-bottom: 16px; color: var(--text);
+}
+.section-sub { color: var(--muted); font-size: 17px; max-width: 560px; line-height: 1.65; margin-bottom: 48px; }
+
+/* ── DOR ── */
+.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.pain-card {
+  background: var(--off); border-radius: var(--radius);
+  padding: 20px; border-left: 3px solid var(--amber);
+}
+.pain-card .icon { font-size: 22px; margin-bottom: 10px; }
+.pain-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.pain-card p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── COMO FUNCIONA ── */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 8px; }
+.step-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; position: relative;
+}
+.step-num {
+  font-family: 'Sora', sans-serif; font-size: 36px; font-weight: 700;
+  color: rgba(245,130,13,0.15); line-height: 1; margin-bottom: 12px;
+}
+.step-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.step-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── O QUE VOCÊ RECEBE ── */
+.receives { background: var(--navy); }
+.receives .section-title { color: var(--white); }
+.receives .section-sub { color: rgba(255,255,255,0.6); }
+.receives-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.receive-item {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius); padding: 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.receive-icon {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: rgba(245,130,13,0.15); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 18px;
+}
+.receive-item h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.receive-item p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.55; }
+
+/* ── DEPOIMENTOS ── */
+.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.testi {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.testi-stars { color: var(--amber); font-size: 14px; margin-bottom: 10px; }
+.testi p { font-size: 14px; color: var(--text); line-height: 1.65; margin-bottom: 16px; font-style: italic; }
+.testi-author { display: flex; align-items: center; gap: 10px; }
+.testi-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--navy-light); color: var(--white);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+}
+.testi-name { font-size: 13px; font-weight: 600; }
+.testi-role { font-size: 12px; color: var(--muted); }
+
+/* ── PREÇO ── */
+.price-box {
+  background: var(--white); border: 2px solid var(--amber);
+  border-radius: 20px; padding: 40px; max-width: 480px; margin: 0 auto;
+  text-align: center; box-shadow: 0 12px 40px rgba(245,130,13,0.12);
+}
+.price-badge {
+  background: var(--amber-light); color: var(--amber);
+  font-size: 12px; font-weight: 600; padding: 5px 14px;
+  border-radius: 99px; display: inline-block; margin-bottom: 20px;
+}
+.price-old { font-size: 16px; color: var(--muted); text-decoration: line-through; margin-bottom: 4px; }
+.price-value {
+  font-family: 'Sora', sans-serif; font-size: 56px; font-weight: 700;
+  color: var(--navy); line-height: 1; margin-bottom: 6px;
+}
+.price-value sup { font-size: 24px; vertical-align: top; margin-top: 12px; display: inline-block; }
+.price-note { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+.price-items { text-align: left; margin-bottom: 28px; }
+.price-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
+.price-item::before { content: '✓'; color: var(--amber); font-weight: 700; flex-shrink: 0; }
+.btn-cta {
+  display: block; background: var(--amber); color: var(--white);
+  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 17px;
+  padding: 16px 24px; border-radius: 99px; text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s; margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(245,130,13,0.35);
+}
+.btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,130,13,0.4); }
+.guarantee { font-size: 12px; color: var(--muted); }
+.guarantee strong { color: var(--text); }
+
+/* ── FAQ ── */
+.faq-list { max-width: 660px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; cursor: pointer; }
+.faq-q { font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.faq-q::after { content: '+'; color: var(--amber); font-size: 22px; font-weight: 400; flex-shrink: 0; }
+.faq-item.open .faq-q::after { content: '−'; }
+.faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; }
+.faq-item.open .faq-a { max-height: 200px; padding-top: 12px; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--navy); color: rgba(255,255,255,0.5);
+  text-align: center; padding: 32px 24px; font-size: 13px;
+}
+footer strong { color: var(--white); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .hero { padding: 56px 20px 56px; }
+  .stats { gap: 24px; }
+  section { padding: 56px 20px; }
+  .price-value { font-size: 44px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Ann<span>Rise</span> Consulting</div>
+  <a href="https://pay.hotmart.com/L106234954P" class="cta-nav" target="_blank">Quero o quiz</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="eyebrow">Diagnóstico de Precificação</div>
+  <h1>Você está vendendo<br>com <em>lucro de verdade</em>?</h1>
+  <p class="sub">Responda 6 perguntas e descubra em minutos o preço certo para o seu produto ou serviço — sem chute, sem planilha complicada.</p>
+
+  <div class="quiz-preview" id="quizPreview">
+    <div class="qp-label">Pergunta 2 de 6</div>
+    <div class="qp-progress"><div class="qp-fill" id="qpFill"></div></div>
+    <div class="qp-question">Quanto custa para você produzir uma unidade do seu produto?</div>
+    <div class="qp-opt" id="opt1">Entre R$ 1 e R$ 20</div>
+    <div class="qp-opt" id="opt2">Entre R$ 20 e R$ 80</div>
+    <div class="qp-opt" id="opt3">Entre R$ 80 e R$ 200</div>
+  </div>
+
+  <a href="https://pay.hotmart.com/L106234954P" class="btn-hero" target="_blank">Quero descobrir meu preço ideal →</a>
+  <p class="hero-note">Acesso imediato · Resultado na hora · Sem cartão para testar</p>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><strong>67%</strong><span>dos pequenos negócios precificam errado</span></div>
+  <div class="stat"><strong>3 em 5</strong><span>MEIs não sabem seu ponto de equilíbrio</span></div>
+  <div class="stat"><strong>6 min</strong><span>para ter seu diagnóstico completo</span></div>
+</div>
+
+<!-- DOR -->
+<section style="background: var(--off);">
+  <div class="container">
+    <div class="section-label">O problema</div>
+    <h2 class="section-title">Você reconhece alguma dessas situações?</h2>
+    <p class="section-sub">A maioria dos empreendedores copia o preço do concorrente ou chuta um número. O resultado: faturamento sem lucro real.</p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="icon">😰</div>
+        <h3>Vende muito, mas sobra pouco</h3>
+        <p>Trabalha o mês todo, o caixa entra — mas no final não sabe para onde foi o dinheiro.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🤔</div>
+        <h3>Preço baseado no concorrente</h3>
+        <p>Cobra parecido com quem está ao lado, mas os custos do seu negócio podem ser completamente diferentes.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">📉</div>
+        <h3>Medo de cobrar mais caro</h3>
+        <p>Fica com receio de perder clientes, mas não sabe se o preço atual sequer cobre seus custos.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🗂️</div>
+        <h3>Planilha é complicada demais</h3>
+        <p>Já tentou organizar os números, mas desistiu no meio do caminho. Falta tempo e clareza.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section>
+  <div class="container">
+    <div class="section-label">Como funciona</div>
+    <h2 class="section-title">Simples assim: 6 perguntas, diagnóstico completo</h2>
+    <p class="section-sub">Sem planilha, sem jargão financeiro. Só você, as perguntas certas e os resultados na tela.</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>Responda sobre o seu negócio</h3>
+        <p>Tipo de negócio, seus custos, despesas fixas e quanto quer lucrar. Leva menos de 6 minutos.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>O quiz calcula tudo automaticamente</h3>
+        <p>Custo real, imposto, rateio de despesas fixas e sua margem de lucro — tudo considerado.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>Receba seu diagnóstico na hora</h3>
+        <p>Preço mínimo, preço ideal, ponto de equilíbrio e insights específicos para o seu negócio.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <h3>Tome decisões com confiança</h3>
+        <p>Ajuste seu preço com base em dados reais — não em achismos ou no preço do concorrente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- O QUE VOCÊ RECEBE -->
+<section class="receives">
+  <div class="container">
+    <div class="section-label" style="color: rgba(245,130,13,0.9);">O que está incluído</div>
+    <h2 class="section-title">Tudo que você precisa para precificar certo</h2>
+    <p class="section-sub">Acesso ao quiz completo + diagnóstico detalhado + planilha de apoio para usar sempre.</p>
+    <div class="receives-grid">
+      <div class="receive-item">
+        <div class="receive-icon">🎯</div>
+        <div>
+          <h3>Quiz interativo de precificação</h3>
+          <p>6 perguntas que cobrem todos os aspectos financeiros do seu negócio.</p>
+        </div>
+      </div>
+      <div class="receive-item">
+        <div class="receive-icon">📊</div>
+        <div>
+          <h3>Diagnóstico personalizado</h3>
+          <p>Preço mínimo, preço ideal, ponto de equilíbrio e análise de margem.</p>
+        </div>
+      </div>
+      <div class="receive-item">
+        <div class="receive-icon">💡</div>
+        <div>
+          <h3>Insights específicos do negócio</h3>
+          <p>Alertas e recomendações gerados a partir dos seus próprios números.</p>
+        </div>
+      </div>
+      <div class="receive-item">
+        <div class="receive-icon">📋</div>
+        <div>
+          <h3>Planilha de precificação Excel</h3>
+          <p>Bônus: planilha profissional para acompanhar seus preços todo mês.</p>
+        </div>
+      </div>
+      <div class="receive-item">
+        <div class="receive-icon">♾️</div>
+        <div>
+          <h3>Acesso vitalício</h3>
+          <p>Refaça o quiz sempre que mudar seus custos ou lançar um novo produto.</p>
+        </div>
+      </div>
+      <div class="receive-item">
+        <div class="receive-icon">📱</div>
+        <div>
+          <h3>Funciona no celular</h3>
+          <p>Acesse de qualquer dispositivo, a qualquer hora, sem instalar nada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section style="background: var(--off);">
+  <div class="container">
+    <div class="section-label">Resultados reais</div>
+    <h2 class="section-title">Quem já descobriu o preço certo</h2>
+    <p class="section-sub" style="margin-bottom: 40px;">Histórias de empreendedores que pararam de trabalhar no prejuízo.</p>
+    <div class="testimonials-grid">
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"Descobri que estava cobrando R$ 12 a menos por marmita. Em 150 marmitas por mês, eram R$ 1.800 que eu deixava na mesa todo mês sem saber."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">CM</div>
+          <div><div class="testi-name">Camila M.</div><div class="testi-role">Marmitaria, Teresina PI</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"Sempre tive medo de cobrar mais. Depois do diagnóstico, vi que meu preço atual mal cobria os custos fixos. Ajustei e o lucro dobrou em 2 meses."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">RP</div>
+          <div><div class="testi-name">Rafael P.</div><div class="testi-role">Barbearia, Piauí</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"Tentei várias planilhas e desisti de todas. O quiz foi a primeira vez que entendi minha precificação de ponta a ponta. Resultado na hora e sem complicação."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JF</div>
+          <div><div class="testi-name">Juliana F.</div><div class="testi-role">Artesanato e Costura</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PREÇO -->
+<section id="preco">
+  <div class="container" style="text-align:center;">
+    <div class="section-label">Investimento</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Uma decisão que se paga na primeira venda</h2>
+    <p class="section-sub" style="margin: 0 auto 48px;">Menos do que um produto vendido errado custa para o seu negócio.</p>
+    <div class="price-box">
+      <div class="price-badge">Oferta de lançamento</div>
+      <div class="price-old">De R$ 97</div>
+      <div class="price-value"><sup>R$</sup>47</div>
+      <div class="price-note">pagamento único · acesso vitalício</div>
+      <div class="price-items">
+        <div class="price-item">Quiz interativo de precificação</div>
+        <div class="price-item">Diagnóstico completo com insights</div>
+        <div class="price-item">Cálculo de ponto de equilíbrio</div>
+        <div class="price-item">Bônus: Planilha Excel profissional</div>
+        <div class="price-item">Acesso vitalício — refaça sempre que quiser</div>
+      </div>
+      <a href="https://pay.hotmart.com/L106234954P" class="btn-cta" target="_blank">Quero meu diagnóstico agora →</a>
+      <p class="guarantee">🔒 <strong>Garantia de 7 dias.</strong> Não ficou satisfeito, devolvemos 100% do valor.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background: var(--off);">
+  <div class="container">
+    <div class="section-label">Dúvidas frequentes</div>
+    <h2 class="section-title" style="margin-bottom: 40px;">Perguntas que recebemos</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Funciona para qualquer tipo de negócio?</div>
+        <div class="faq-a">Sim. O quiz funciona para produtos físicos, serviços, alimentos, produtos digitais e qualquer negócio que precise definir preço de venda. As perguntas se adaptam ao tipo de negócio que você escolher.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Preciso ter conhecimento financeiro para usar?</div>
+        <div class="faq-a">Nenhum. O quiz foi criado justamente para quem não tem formação financeira. As perguntas são simples e práticas — se você sabe quanto gasta para produzir, já tem o que precisa.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Como recebo o acesso após o pagamento?</div>
+        <div class="faq-a">Imediatamente após a confirmação do pagamento, você recebe o link de acesso no e-mail. Basta clicar e já começa o quiz — sem instalação.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Posso usar para mais de um produto?</div>
+        <div class="faq-a">Sim, pode refazer o quiz quantas vezes quiser, para quantos produtos ou serviços precisar. O acesso é vitalício.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">E se eu quiser um diagnóstico mais aprofundado?</div>
+        <div class="faq-a">Após o quiz, você pode optar por uma consultoria individual com a AnnRise Consulting para um diagnóstico completo do seu negócio, com planilha personalizada e acompanhamento.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section style="background: var(--navy); text-align: center;">
+  <div class="container">
+    <h2 style="font-size: clamp(24px,3.5vw,40px); font-weight:700; color: var(--white); margin-bottom:16px; letter-spacing:-0.02em;">Pare de trabalhar no prejuízo.</h2>
+    <p style="color: rgba(255,255,255,0.65); font-size:17px; margin-bottom:40px; max-width:480px; margin-left:auto; margin-right:auto;">Em 6 minutos você descobre o preço que cobre seus custos, paga suas contas e ainda sobra dinheiro para você.</p>
+    <a href="https://pay.hotmart.com/L106234954P" class="btn-hero" target="_blank">Quero meu diagnóstico por R$ 47 →</a>
+    <p style="color: rgba(255,255,255,0.35); font-size:13px; margin-top:16px;">Garantia de 7 dias · Acesso imediato · Vitalício</p>
+  </div>
+</section>
+
+<footer>
+  <p><strong>AnnRise Consulting</strong> · Where businesses rise</p>
+  <p style="margin-top:8px;">© 2026 · Todos os direitos reservados</p>
+</footer>
+
+<script>
+// Animated quiz preview
+const fills = [33, 66, 100, 16, 50];
+const opts = [
+  { q: "Qual é o tipo do seu negócio?", a: 1 },
+  { q: "Quanto custa produzir uma unidade?", a: 2 },
+  { q: "Quais suas despesas fixas mensais?", a: 0 },
+];
+const optLabels = [
+  ["Produto físico", "Prestação de serviços", "Produto digital"],
+  ["Entre R$ 1 e R$ 20", "Entre R$ 20 e R$ 80", "Entre R$ 80 e R$ 200"],
+  ["Até R$ 500", "Entre R$ 500 e R$ 2.000", "Acima de R$ 2.000"],
+];
+let qi = 0;
+
+function animateQuiz() {
+  const fill = document.getElementById('qpFill');
+  const q = document.querySelector('.qp-question');
+  const o1 = document.getElementById('opt1');
+  const o2 = document.getElementById('opt2');
+  const o3 = document.getElementById('opt3');
+
+  [o1,o2,o3].forEach(o => o.classList.remove('active'));
+
+  const cur = opts[qi % opts.length];
+  const labels = optLabels[qi % optLabels.length];
+  q.textContent = cur.q;
+  o1.textContent = labels[0];
+  o2.textContent = labels[1];
+  o3.textContent = labels[2];
+  fill.style.width = ((qi % 6) + 1) / 6 * 100 + '%';
+
+  setTimeout(() => {
+    const els = [o1, o2, o3];
+    els[cur.a].classList.add('active');
+    qi++;
+    setTimeout(animateQuiz, 2200);
+  }, 900);
+}
+setTimeout(animateQuiz, 800);
+
+// FAQ
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    item.classList.toggle('open');
+  });
+});
+</script>
+</body>
+</html>
