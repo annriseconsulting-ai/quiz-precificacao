@@ -469,12 +469,188 @@ body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--o
   <div class="cta-box">
     <button class="btn-cta" onclick="alert('Redirecionar para Hotmart/link de compra')">Quero aprofundar com consultoria individual →</button>
     <br>
-    <button class="btn-restart" onclick="restart()">Refazer o diagnóstico</button>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn-restart" onclick="restart()" style="flex:1;">Refazer o diagnóstico</button>
+      <button class="btn-print" onclick="imprimirDiagnostico()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+        🖨️ Imprimir diagnóstico
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TELA DE IMPRESSÃO (oculta na tela, visível só ao imprimir) -->
+<div id="print-area" style="display:none;">
+  <div class="print-header">
+    <div class="print-brand">AnnRise Consulting</div>
+    <div class="print-slogan">Where businesses rise</div>
+    <h1 class="print-title">Diagnóstico de Precificação</h1>
+    <p class="print-date" id="print-date"></p>
+  </div>
+
+  <div class="print-section">
+    <div class="print-section-title">Fórmulas aplicadas</div>
+    <div class="print-formula-box">
+      <div id="pf-pe"></div>
+      <div id="pf-pv"></div>
+    </div>
+  </div>
+
+  <div class="print-section">
+    <div class="print-section-title">Resultados</div>
+    <table class="print-table">
+      <tr><th>Indicador</th><th>Valor</th></tr>
+      <tr><td>Custo variável total por unidade</td><td id="pr-cv"></td></tr>
+      <tr class="highlight-row"><td>Preço de Equilíbrio (PE)</td><td id="pr-pe"></td></tr>
+      <tr class="highlight-row-amber"><td>Preço de Venda ideal (PV)</td><td id="pr-pv"></td></tr>
+      <tr><td>Markup calculado</td><td id="pr-markup"></td></tr>
+      <tr><td>Lucro por unidade</td><td id="pr-lucro-unit"></td></tr>
+      <tr><td>Lucro mensal estimado</td><td id="pr-lucro-mes"></td></tr>
+      <tr><td>Desconto máximo seguro</td><td id="pr-desc-max"></td></tr>
+    </table>
+  </div>
+
+  <div class="print-section">
+    <div class="print-section-title">Diagnóstico do preço atual e análise completa</div>
+    <div id="print-insights"></div>
+  </div>
+
+  <div class="print-footer">
+    <p>Este diagnóstico foi gerado pelo Quiz de Precificação da AnnRise Consulting.</p>
+    <p>Para uma consultoria personalizada: <strong>annriseconsulting.com.br</strong></p>
   </div>
 </div>
 
 </div><!-- .card -->
 </div><!-- .shell -->
+
+<style>
+.btn-print {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+  border-radius: 99px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+.btn-print:hover { background: var(--navy); color: white; }
+
+@media print {
+  body * { visibility: hidden !important; }
+  #print-area, #print-area * { visibility: visible !important; }
+  #print-area {
+    display: block !important;
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100%;
+    background: white;
+    padding: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #1A2332;
+    font-size: 11pt;
+  }
+
+  .print-header {
+    background: #0D2B4E;
+    color: white;
+    padding: 24px 32px 20px;
+    margin-bottom: 20px;
+  }
+  .print-brand {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #F5820D;
+    margin-bottom: 2px;
+  }
+  .print-slogan {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 14px;
+  }
+  .print-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px;
+  }
+  .print-date {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.55);
+    margin: 0;
+  }
+
+  .print-section {
+    padding: 0 32px;
+    margin-bottom: 18px;
+  }
+  .print-section-title {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6B7280;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  .print-formula-box {
+    background: #0D2B4E;
+    color: #F5820D;
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    padding: 12px 16px;
+    border-radius: 6px;
+    line-height: 2;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+  .print-table th {
+    background: #0D2B4E;
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 9pt;
+  }
+  .print-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #E5E7EB;
+  }
+  .print-table tr:nth-child(even) td { background: #F7F8FA; }
+  .highlight-row td { background: #FEF0E0 !important; font-weight: 500; }
+  .highlight-row-amber td { background: #0D2B4E !important; color: white !important; font-weight: 700; }
+
+  .print-insight {
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 9.5pt;
+    line-height: 1.5;
+    border-left: 4px solid #ccc;
+  }
+  .print-insight.ok { background: #F0FDF4; border-color: #16A34A; }
+  .print-insight.warn { background: #FFFBEB; border-color: #D97706; }
+  .print-insight.alert { background: #FEF2F2; border-color: #DC2626; }
+  .print-insight strong { display: block; font-size: 9.5pt; margin-bottom: 2px; }
+
+  .print-footer {
+    padding: 14px 32px;
+    margin-top: 20px;
+    border-top: 2px solid #F5820D;
+    text-align: center;
+    font-size: 9pt;
+    color: #6B7280;
+  }
+  .print-footer strong { color: #0D2B4E; }
+}
+</style>
 
 <script>
 const D = {};
@@ -681,6 +857,40 @@ function restart() {
   document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
   document.querySelectorAll('input[type=number]').forEach(i => i.value = '');
   go('s0');
+}
+
+function imprimirDiagnostico() {
+  const now = new Date();
+  document.getElementById('print-date').textContent =
+    'Gerado em ' + now.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'}) +
+    ' às ' + now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('pf-pe').textContent = document.getElementById('formula-pe').textContent;
+  document.getElementById('pf-pv').textContent = document.getElementById('formula-pv').textContent;
+  document.getElementById('pr-cv').textContent = document.getElementById('r-cv').textContent;
+  document.getElementById('pr-pe').textContent = document.getElementById('r-pe').textContent;
+  document.getElementById('pr-pv').textContent = document.getElementById('r-pv').textContent;
+  document.getElementById('pr-markup').textContent = document.getElementById('r-markup').textContent;
+  document.getElementById('pr-lucro-unit').textContent = document.getElementById('r-lucro-unit').textContent;
+  document.getElementById('pr-lucro-mes').textContent = document.getElementById('r-lucro-mes').textContent;
+  document.getElementById('pr-desc-max').textContent = document.getElementById('r-desc-max').textContent;
+
+  const allInsights = [
+    ...document.getElementById('insights-preco').querySelectorAll('.insight'),
+    ...document.getElementById('insights-full').querySelectorAll('.insight'),
+  ];
+  const printIns = document.getElementById('print-insights');
+  printIns.innerHTML = '';
+  allInsights.forEach(el => {
+    const tipo = el.classList.contains('ok') ? 'ok' : el.classList.contains('alert') ? 'alert' : 'warn';
+    const titulo = el.querySelector('strong') ? el.querySelector('strong').textContent : '';
+    const texto = el.querySelector('p') ? el.querySelector('p').textContent : '';
+    const ico = el.querySelector('.ico') ? el.querySelector('.ico').textContent : '';
+    printIns.innerHTML += `<div class="print-insight ${tipo}"><strong>${ico} ${titulo}</strong>${texto}</div>`;
+  });
+  if (!allInsights.length) printIns.innerHTML = '<p style="color:#6B7280;font-size:9.5pt;">Nenhum alerta gerado.</p>';
+
+  window.print();
 }
 </script>
 </body>
